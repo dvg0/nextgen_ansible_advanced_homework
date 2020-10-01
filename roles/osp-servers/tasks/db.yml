@@ -1,4 +1,4 @@
-me: Create a db server instance
+- name: Create a db server instance
   os_server:
     cloud: openstack
     name: db

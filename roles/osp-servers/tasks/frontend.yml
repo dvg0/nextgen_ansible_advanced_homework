@@ -1,4 +1,4 @@
-me: Create a server instance
+- name: Create a server instance
   os_server:
     cloud: openstack
     name: frontend

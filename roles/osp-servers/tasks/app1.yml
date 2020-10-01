@@ -1,4 +1,4 @@
-me: Create app1 server instance
+- name: Create app1 server instance
   os_server:
     cloud: openstack
     name: app1
