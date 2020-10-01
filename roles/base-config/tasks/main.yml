@@ -9,6 +9,14 @@
     backup: yes
 
 - name: enable repos
- 
-- name: install base tools and packages
+  copy:
+    src: open_three-tier-app.repo
+    dest: /etc/yum.repos.d/open_three-tier-app.repo 
 
+- name: install base tools and packages
+  yum:
+    name: "{{ item }}" 
+    state: latest
+  loop:
+    - httpie
+    - python-pip
