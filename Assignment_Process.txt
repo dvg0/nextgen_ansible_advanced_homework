@@ -1,0 +1,187 @@
+Environment Details
+-----------------------
+Ansible Advanced - Homework
+	- Tower Installed
+	- Tower host: workstation-${OSP_GUID}.${OSP_DOMAIN}
+	- https://tower(1-3).{{TOWER_GUID}}.example.opentlc.com
+	- UserName: admin
+	- Password: r3dh4t1!
+	
+	- SSH host: admin.na.shared.opentlc.com
+	- targetHost: bastion.98a8.example.opentlc.com
+	
+	- GUID	98a8
+	
+	- https://tower1.98a8.example.opentlc.com/#/login
+	
+	- tower1.98a8.internal
+	- tower2.98a8.internal
+	- tower3.98a8.internal
+	
+Ansible Advanced NG - OpenStack
+
+	- Tower Isolated host: 77b8.blue.osp.opentlc.com
+	- Environment Info 001	- http://horizon-77b8.blue.osp.opentlc.com:80
+	- Environment Info 002	- horizon-77b8.blue.osp.opentlc.com port 6080
+	- Environment Info 003	- horizon-77b8.blue.osp.opentlc.com port 5000
+	- Environment Info 004	- workstation-77b8.blue.osp.opentlc.com port 22
+	- dattaram.ghatage-atos.net@workstation-77b8.blue.osp.opentlc.com
+	- gwYswfPqn6we
+
+
+	- targetHost	bastion.77b8.dynamic.osp.opentlc.com
+			- Clone the github repository to /root
+			- Read Readme File
+			- provision the network, security groups, flavor, and key pairs on OpenStack
+			- copy labrc file in your home dir and edit to setup env variables which we will be using in the whole lab
+			- site-setup-prereqs.yaml  >>> ansible-playbook site-setup-prereqs.yaml -k
+				- openstack.pem - private key  
+				- openstack.pub	- public key
+				- Connect workstation form bastion
+				- ssh -i /root/.ssh/openstack.pem cloud-user@workstation-${OSP_GUID}.${OSP_DOMAIN}
+
+	- https://blue-labconsole.apps.shared.na.openshift.opentlc.com/
+	- dattaram.ghatage-atos.net
+
+	- GUID	77b8
+
+Ansible Advanced - Three Tier App
+	# ordered via aws_provision.yml
+	
+	- GUID, is: 87ca
+	- ssh -i ~/.ssh/your_private_key_name dattaram.ghatage-atos.net@bastion.87ca.example.opentlc.com
+	- targetHost	bastion.87ca.example.opentlc.com
+	
+	
+Configuration Process
+
+	1. 	For widnows use puttygen and generate Public and private key for windows machine, store private key on directory. "C:\Users\A581729\OneDrive - 	Atos\Documents\dattaram.ghatage.ppk"
+	2.  open https://account.opentlc.com/update and pate the PUB key and update it
+	3. 	logon to Ansible Advanced - Homework -  bastion.98a8.example.opentlc.com using private key in Auth
+	4. 	sudo -i  # to go to root prompt
+	5. 	on root prompt 
+		
+		git clone https://github.com/dvg0/nextgen_ansible_advanced_homework.git
+		cd nextgen_ansible_advanced_homework/
+		cp labrc ~/
+		cat ~/labrc
+		vi ~/labrc
+			export OPENTLC_ID=dattaram.ghatage-atos.net
+			export OSP_DOMAIN=blue.osp.opentlc.com
+			export OSP_GUID=77b8
+			export TOWER_GUID=98a8
+			export OPENTLC_PASSWORD=ShreeR@m0707
+			export GITHUB_REPO=https://github.com/dvg0/nextgen_ansible_advanced_homework.git
+			export JQ_REPO_BASE=http://www.opentlc.com/download/ansible_bootcamp
+			export REGION=us-east-1
+			export MAIL_ID=dattaram.ghatage@atos.net
+		WQ!
+		cat ~/labrc
+		source ~/labrc
+	
+	# Setup site-setup-prereqs playbook
+	
+		ansible-playbook site-setup-prereqs.yaml -k
+		
+		SSH password: <type password>
+
+	# Connect to workstation and verify
+		ssh -i /root/.ssh/openstack.pem cloud-user@workstation-${OSP_GUID}.${OSP_DOMAIN}
+		hostname  # to verify hostname -> workstation-77b8.blue.osp.opentlc.com
+		exit 		# to exit on bastion root prompt
+		
+		
+	# openstack
+	#	http://horizon-77b8.blue.osp.opentlc.com/dashboard/project/de
+	#	admin
+	#	r3dh4t1!
+	#	verify all the details as per the document shared
+
+	# 3. Use case
+	#		- telecommunications company called MitziCom
+	#		- MitziCom wants your good three-tier application playbooks
+	#		- adopt best practices, consistency, and reuse
+	#		
+	
+	# 4. Implement
+	
+	#	1. Install a workstation as an isolated node
+	#	2. Develop playbooks to provision a QA environment running on RHOSP
+	#	3. Provision a production environment on Amazon Web Services (AWS)
+	#	4. Deploy a three-tier application
+	#	5. Run the smoke test
+	
+	
+	# verify the Ansible isolated node installed
+			
+	edit 
+	/root/nextgen_ansible_advanced_homework/roles/config-tower/tasks/post-config-tower.yml
+	
+	- name: Create Homework Assignment project
+		command: |
+		  tower-cli project create --organization="{{org_name}}" --scm-type=git --scm-branch="{{scm_branch}}" --scm-url="{{ scm_url }}" --scm-update-on-launch=True -n "{{ proj_name }}"
+	- name: Tower Creds key file
+		ssh_key_data: /root/.ssh/openstack.pem
+
+		ansible-playbook site-config-tower.yml -e tower_GUID=${TOWER_GUID} -e osp_GUID=${OSP_GUID} -e osp_DOMAIN=${OSP_DOMAIN} -e opentlc_login=${OPENTLC_LOGIN} -e path_to_opentlc_key=/root/.ssh/openstack.pem -e param_repo_base=${JQ_REPO_BASE} -e opentlc_password=${OPENTLC_PASSWORD} -e REGION_NAME=${REGION} -e EMAIL=${MAIL_ID} -e github_repo=${GITHUB_REPO}
+		
+	# post successsful run visit tower https://tower1.98a8.example.opentlc.com/ and check templated, you will see templates
+	
+	#4.3
+		
+	# edit site-osp-instances.yml - you will see the osp-servers roles. create roles and update files
+	
+	/root/nextgen_ansible_advanced_homework/roles/osp-servers/tasks
+		create app1.yml
+		app2.yml
+		db.yml
+		frontend.yml
+		main.yml
+
+	/root/nextgen_ansible_advanced_homework/roles/osp-servers/vars
+		main.yml
+	#verify above file
+	
+	# run template 02_Provision QA Env from tower console
+	
+	# check the instance get created in Openstack console
+	
+	# create the tier3 sites - modify roles, tasks and tiers. modify and update these files
+	
+		site-3tier-app.yml
+	
+			../../app-tier/tasks/main.yml
+			../../app-tier/templates/index.html.j2
+			../tasks/main.yml
+			../../lb-tier/handlers/main.yml
+			../../lb-tier/tasks/main.yml
+			../../lb-tier/templates/haproxy.cfg.j2
+			../../lb-tier/vars/main.yml
+
+	# Run the smoke test	
+		site-smoke-osp.yml
+		
+	
+	# from the workstation downolad the scripts/common
+	
+		mkdir ~/bin
+		wget http://www.opentlc.com/download/ansible_bootcamp/scripts/common.sh
+		wget http://www.opentlc.com/download/ansible_bootcamp/scripts/jq-linux64 -O ~/bin/jq
+		wget http://www.opentlc.com/download/ansible_bootcamp/scripts/order_svc.sh
+		chmod +x order_svc.sh ~/bin/jq common.sh
+		
+		create credential.ec file in 
+			export username=dattaram.ghatage-atos.net
+			export password=$hreeR@m0707
+			export uri=https://labs.opentlc.com	
+		source credential.rc ; ./order_svc.sh -y -c 'OPENTLC Automation' -i 'Ansible Advanced' -t 1 -d 'dialog_expiration=7;region=na;nodes=1;dialog_runtime=8'
+	
+	
+		
+	
+	# Git update to sync
+	
+		git status
+		git add .
+		git commit -m " commment "
+		git push
